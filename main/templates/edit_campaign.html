@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<script>
+		$(document).ready(function () {
+
+			$("#id_message").keydown(function  () {
+				$("#avail_chars").text(({{campaign.max_length}} - $(this).val().length) + " available");
+				
+
+				if($(this).val().length > {{campaign.max_length}})
+					return false;
+
+			});
+			$("#id_save_message").click(function  () {
+				if($("#id_message").val() != "" && $("#id_message").val().indexOf('#{{campaign.hashtag}}') == -1)
+				{
+					$.post("{% url new_message %}",
+						    { message:$("#id_message").val(),
+						      campaign:{{campaign.pk}}
+						    },function(data){
+						    	if(data.status == "OK")
+						    	{
+						    		data = data.message;
+		    		        		drawMessage(data.message,data.hashtag,data.id,data.created,data.creator,0);
+		    		        	}
+		    		        	else
+		    		        	{
+		    		        		alert(data.error);
+		    		        	}
+		    		        	$("#id_message").val("");
+						    }
+						   );
+				}
+				else
+				{
+					if($("#id_message").val().indexOf('#{{campaign.hashtag}}') != -1)
+						alert("Don't include the main hashtag in the tweet. We'll do it for you");
+					else
+						alert("Please add a message");
+				}
+			});
+		});
+
+		function drawMessage(message,ht,id,created,author,joiners)
+		{
+			main = $("<div class='alert alert-info row'>");
+			main.attr("id","message_"+id);
+
+
+
+			spanm = $("<div class'span2' >").css("font-weight","bold");
+			spanm.text(message + " #" + ht);
+			spanm.addClass("messages_container");
+			main.append(spanm);
+			main.append($(""));
+			del_butt= $("<button style='margin-left:5px' msg_id='"+id+"' class='pull-right btn btn-danger btn-xs'><i class='glyphicon glyphicon-small glyphicon-remove'></i></button>")
+			del_butt.click(function  () {
+				if(confirm('Really delete this tweet?'))
+				{
+					var obj_id = $(this).attr("msg_id");
+					$.get("{% url delete_message %}",{id:$(this).attr("msg_id")},function  (data) {
+						if(data == "OK")
+						{
+							$("#message_"+obj_id).remove();
+						}
+					});
+				}
+			});
+			datad = $("<div>").addClass("pull-right");
+			if(parseInt(joiners) == 1)
+				joiners_txt = "1 user"
+			else
+				joiners_txt = joiners + " users"
+
+			datad.html(joiners_txt+"<br/>Created on " + created + " by " + author + "");
+			datad.append(del_butt);
+			if(parseInt(joiners) > 0)
+				del_butt.attr("disabled","true");	
+
+
+			main.append(datad);
+			main.append($("<div style='clear:both'></div>"))
+
+
+			$("#messages_container").append(main);
+		}
+	</script>
+
+        <div class="page-header">
+
+          <h2>Edit Campaign <b>'{{campaign.title}}'</b>
+<a href="https://twitter.com/share" class="twitter-share-button" data-text="I created a new Crowd for #{{campaign.hashtag}}, come and join me! http://microwder.com/c/{{campaign.pk}}" data-via="MiCrowderCom" data-size="large">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </h2>
+
+          {% if notjoined %}
+          <a class="btn btn-danger" href="{% url join_campaign campaign.pk campaign.hashtag %}">
+          You haven't joined your own Crowd yet! Click here to select a tweet</a>
+          {% else %}
+          <a class="btn btn-warning" href="{% url join_campaign campaign.pk campaign.hashtag %}">View your Crowd</a>
+
+          {% endif %}
+          <h4 display="inline"><span class='label label-info'> This is your Crowd url: <input style="width:170px;border:none" type="text" value="http://microwder.com/c/{{campaign.pk}}"/></span></h4>
+
+        </div>
+
+        <div>
+        	<div class="row"><h3>New Tweet for your Campaign</h3>
+        	<p class="text-info">Create the tweets that users will be able to choose to join your campaign.<br/>
+        	These are the tweets users will sent when the campaign starts running.</p>
+        		<p class="row" style="margin-left:20px">
+        		<textarea class="col-sm-7"
+        				maxlength="{{campaign.max_length}}"
+        				placeholder="Already contains #{{campaign.hashtag}}"
+        				id="id_message"></textarea>
+        				</p>
+        				<p class="row" style="margin-left:20px">
+        		<button id="id_save_message" class="btn btn-success">Save Message</button>
+        		<button id="id_clear_text" class="btn btn-danger"  onclick="$('#id_message').val('');">Clear text</button>
+        		<span id="avail_chars">{{campaign.max_length}} available.</span>
+        		</p>
+        	</div>
+        	<hr/>
+        	<h3>Available messages</h3>
+
+        	<div id="messages_container">
+
+
+        	</div>
+        		<script>
+        		$(function  () {
+	        		{% for message in campaign.campaignmessage_set.all %}
+	        		// console.log('');
+	        		// console.log('{{user.username}}');
+	        		drawMessage('{{message.text}}','{{campaign.hashtag}}',{{message.pk}},
+	        			"{{message.created|date:"N d Y, P"}}",
+	        			{% if message.creator.username == user.username %}"You"{%else%}"{{message.creator}}"{%endif%},'{{message.users_count}}');
+	        		{% endfor %}
+        		})
+
+        		</script>
+
+        </div>
+{% endblock %}

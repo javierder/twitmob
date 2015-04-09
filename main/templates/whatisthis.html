@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load twitmob %}
+{% block content %}
+<div class="jumbotron" style="background-color:white;text-align:center">
+        <h1>What is MiCrowder.com...?</h1>
+        <div class="text-left">
+        <br/>
+        <p>
+       	<strong>Step 1:</strong> Create your Crowd: <a class="btn btn-success" href="{% url new_crowd %}" class="btn">Here</a>.
+       	<br/>
+       	There you'll be able to create your crowd by selecting your #hashtag and choose a time and a date to schedule your twitter bomb.
+        </p>
+        
+        <p>
+       	<strong>Step 2:</strong> After creating your Crowd, you'll be able to add messages/tweets for it.
+       	<br/>
+       	You can add as much as you want; and you can even allow your <i>crowders</i> to add their own.
+        </p>
+
+        <p>
+       	<strong>Step 3:</strong> Then...don't forget to choose the one you'll send yourself!
+        </p>
+
+        <p>
+       	<strong>Step 4:</strong> Make sure you promote your Crowd, via twitter or any way you want!<br/>
+       	You'll want as much <i>crowders</i> as possible in your campaign!
+        <blockquote style="padding-top:1px;padding-bottom:1px">
+          They'll be able to select the message they want to tweet with your hashtag.
+        </blockquote>
+        </p>
+
+        <p>
+       	<strong>Step 5:</strong> When the scheduled time for your Crowd starts...we'll start tweeting the messages you and your <i>crowders</i> selected.<br/>
+       	We'll tweet all the messages we can for 1 hour since your Crowd starts!
+        </p>
+
+        <hr/>
+        <p>Well...that's all!<br/>
+        Remember this is a very alpha release! Send any comments to <a href="http://twitter.com/microwdercom">@microwdercom</a>!
+        </div>
+
+            <script>
+            $(document).ready(function  () {
+            	$("#whatisthispill").addClass("active");
+            });
+            </script>
+
+      {% endblock %}

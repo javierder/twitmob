@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load twitmob %}
+
+
+{% block content %}
+
+
+          <div class="page-header">
+          <h2>My Crowds</h2>
+          </div>
+          	<h3>Active Crowds you created</h3>
+          	
+          	{% for crowd in my_campaigns %}
+          	<div class="alert alert-info">
+          	<p class="pull-left text-primary">
+          		<b><a href="{% url edit_campaign crowd.pk %}">
+          		<i class="glyphicon glyphicon-edit"></i> {{crowd.title}}</a></b>
+          		<br/>
+          		#{{crowd.hashtag}}
+          		<br/>
+          		Starts {% diff_date crowd.start_time %}.
+          	</p>
+          	<p class="pull-right">
+
+          		{{crowd.total_count}} user{% if crowd.total_count != 1%}s{%endif%}  joined.
+          		<br/>
+          		{{crowd.total_messages}} available message{% if crowd.total_messages != 1%}s{%endif%}
+          	</p>
+          	<div style="clear:both"></div>
+          	</div>
+          	{% empty %}
+          	<div class="alert alert-warning">
+          	You haven't created any crowd!<br/><br/>
+               <a class="btn btn-default" href="{% url new_crowd %}">Create a new Crowd now!</a>
+          	
+          	</div>
+          	{% endfor %}
+          
+
+
+          	<h3>Active Crowds you joined</h3>
+          	
+          	{% for crowd in my_joined_campaigns %}
+          	<div class="alert alert-info">
+          	<p class="pull-left text-primary">
+          		<b><a href="{% url join_campaign crowd.pk crowd.hashtag %}">
+          		<i class="glyphicon glyphicon-ok"></i> {{crowd.title}}</a></b>
+          		<br/>
+          		#{{crowd.hashtag}}
+          		<br/>
+          		Starts {% diff_date crowd.start_time %}.
+          	</p>
+          	<p class="pull-right">
+
+          		{{crowd.total_count}} user{% if crowd.total_count != 1%}s{%endif%}  joined.
+          		<br/>
+          		{{crowd.total_messages}} available message{% if crowd.total_messages != 1%}s{%endif%}<br/>
+          		Created by {{crowd.owner}}.
+          	</p>
+          	<div style="clear:both"></div>
+          	</div>
+               {% empty %}
+               <div class="alert alert-warning">
+               You haven't joined any crowd!<br/><br/>
+               <a class="btn btn-default" href="{% url crowds %}">Join a  Crowd now!</a>
+               
+               </div>               
+          	{% endfor %}
+          
+
+{% endblock %}

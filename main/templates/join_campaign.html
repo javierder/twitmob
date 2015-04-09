@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<script>
+  $(document).ready(function  () {
+    $("#id_save_message").click(function  () {
+        if($("#id_message").val() != "" && $("#id_message").val().indexOf('#{{campaign.hashtag}}') == -1)
+        {
+          $.post("{% url new_message %}",
+                { message:$("#id_message").val(),
+                  campaign:{{campaign.pk}}
+                },function(data){
+                  if(data.status == "OK")
+                  {
+                   document.location.href= "{% url join_campaign campaign.pk%}?m=" + data.message.id;
+                    // data = data.message;
+                        // drawMessage(data.message,data.hashtag,data.id,data.created,data.creator,0);
+                      }
+                      else
+                      {
+                        alert(data.error);
+                      }
+                      // $("#id_message").val("");
+                }
+               );
+        }
+        else
+        {
+          if($("#id_message").val().indexOf('#{{campaign.hashtag}}') != -1)
+            alert("Don't include the main hashtag in the tweet. We'll do it for you");
+          else
+            alert("Please add a message");
+        }
+
+    });
+  })
+</script>
+
+        <div class="page-header">
+          <h2>Join Crowd '{{campaign.title}}', #{{campaign.hashtag}}
+          <a href="https://twitter.com/share" class="twitter-share-button" data-text="I created a new Crowd for #{{campaign.hashtag}}, come and join me! http://microwder.com/c/{{campaign.pk}}" data-via="MiCrowderCom" data-size="large">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></h2>
+        <blockquote>
+          <p><i>{{campaign.description}}</i></p>
+          {% if user == campaign.owner %}
+          </blockquote>
+          <p>
+          <a href="{% url edit_campaign campaign.pk %}" class="btn btn-info">Edit this Crowd</a>
+          </p>
+          {% endif %}
+          
+            <p>People in this Crowd: <b class="text-success">{{campaign.total_count}}</b></p>
+
+            {% if has_joined %}
+             <p class="text-success" class=> You already joined this crowd. You can change below the message you'll post.<br/>
+             <a href="{% url leave_campaign %}?id={{campaign.pk}}" class="btn btn-danger pull-right" onclick='if(!confirm("Are you sure you want to leave this campaign?")) return false;'>Leave this crowd</a></p>
+             <div style="clear:both"></div>
+            {% else %}
+            {% if campaign.owner == user %}
+<div class="alert alert-danger"><b>You haven't joined your own Crowd yet!                Select a message below; that's the message you'll send when the crowd runs.</b></div>
+{% else %}
+<p class="text-info"><b>                Select a message below; that's the message you'll send when the crowd runs.</b></p>
+{% endif %}
+            {% endif %}
+
+          
+        </div>
+
+        	<div>
+                <h4>To Join this Crowd, select one of the available Crowd tweets
+                {% if campaign.allow_personal_tweets %}
+                or write your own tweet.
+                {% endif %}</h4>
+                <p class="text-info">The tweet you select will be sent by you when this crowd starts running.</p>
+                {% if campaign.allow_personal_tweets %}
+                <p class="text-success">You can also write your own tweet here:</p>
+
+            <p class="row" style="margin-left:20px">
+            <textarea class="col-sm-7"
+                maxlength="{{campaign.max_length}}"
+                placeholder="Already contains #{{campaign.hashtag}}"
+                id="id_message"></textarea></p>
+               
+                <p class="row" style="margin-left:20px">
+            <button id="id_save_message" class="btn btn-success">Save Message</button>
+            <button id="id_clear_text" class="btn btn-danger"  onclick="$('#id_message').val('');">Clear text</button>
+            <span id="avail_chars">{{campaign.max_length}} available.</span>
+          </p>
+          </div>
+          <hr/>
+                {% endif%}
+
+        	   {% for message in campaign.campaignmessage_set.all %}
+               <p id="mm_{{message.pk}}" class="alert alert-info"><b>{{message.text}} #{{campaign.hashtag}}</b>
+               <br/>
+                <span class="pull-right">created by {{message.creator}}, used by {{message.users_count}} users.
+                <a href="{% url join_campaign campaign.pk %}?m={{message.pk}}" class="btn btn-sm btn-primary">
+                    {% if not user_campaign %}
+                    Join with this tweet
+                    {% else %}
+                    Change to this tweet
+                    {% endif %}
+                </a></span><br/>
+               </p>
+
+               {% endfor %}
+               {% if has_joined %}
+               <script>
+               $(function  () {
+                   $("#mm_{{joined_message.message.pk}}").addClass("alert-success");
+                   $("#mm_{{joined_message.message.pk}}").removeClass("alert-info");
+                   $("#mm_{{joined_message.message.pk}}").find("a").remove();
+               })
+               </script>
+               {% endif %}
+
+        	<!-- </div> -->
+        <!-- </div> -->
+{% endblock %}

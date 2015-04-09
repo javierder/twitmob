@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load twitmob %}
+
+{% block content %}
+
+
+        <div class="page-header">
+          <h2 class="pull-left">Available Crowds
+
+<div class="btn-group">
+  <a  class="btn " >Sort by:</a>
+  <a  class="btn btn-default {% if sort == 'start' %}active{%endif%}" href="{% url crowds %}?sort=start">start</a>
+  <a  class="btn btn-default {% if sort == 'users' %}active{%endif%}" href="{% url crowds %}?sort=users">users</a>
+  <a  class="btn btn-default {% if sort == 'created' %}active{%endif%}" href="{% url crowds %}?sort=created">created</a>
+  <a class="btn"></a>
+</div>
+          </h2>
+<ul class="pagination pull-right">
+  <li>{% if prev != None %}<a href="{% url crowds %}?start={{prev}}&sort={{sort}}">&laquo; Previous {{NUM_PAGE}}</a>{%endif%}</li>
+  <li>{% if next != None%}<a href="{% url crowds %}?start={{next}}&sort={{sort}}">Next {{NUM_PAGE}} &raquo; </a>{% endif %}</li>
+</ul>
+<div style="clear:both"></div>
+
+        </div>
+
+
+
+        	<div class="row">
+        	{% for c in campaigns %}
+            <div class="col-md-3 text-center">
+                <h4><a href="{% url join_campaign c.pk c.hashtag %}">{{c.title}}</a></h4>
+              <p>#{{c.hashtag}}, {{c.total_count}} crowder{% if c.total_count > 1 %}s{%endif%}</p>
+                        <p  class="text-warning" style="font-size:14px">{% diff_date c.start_time %}</p>
+
+              <p clas="text-center">
+                <a href="{% url join_campaign c.pk c.hashtag %}" class="btn btn-success">Join now!</a>
+              </p>
+              <p><blockquote style="text-align:left">{{c.description}}</blockquote></p>
+              
+            </div>
+                {% if forloop.counter|divisibleby:4 %}</div><hr /><div class="row">{%endif%}
+        	{% endfor %}
+        	</div>
+
+<ul class="pagination pull-right">
+  <li>{% if prev != None %}<a href="{% url crowds %}?start={{prev}}&sort={{sort}}">&laquo; Previous {{NUM_PAGE}}</a>{%endif%}</li>
+  <li>{% if next != None%}<a href="{% url crowds %}?start={{next}}&sort={{sort}}">Next {{NUM_PAGE}} &raquo; </a>{% endif %}</li>
+</ul>
+        <!-- </div> -->
+{% endblock %}

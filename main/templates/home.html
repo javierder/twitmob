@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load twitmob %}
+{% block content %}
+<div class="jumbotron" style="background-color:white;text-align:center">
+        <h1>Plan your twitter bomb!</h1>
+        <p>
+        Get your community together, and release your synchronized 'twitter bomb'!
+        </p>
+        <p>Don't know what we're talking about? Get <a href="/what-is-mycrowder" class="btn btn-xs btn-info">help here!</a>, or read this 3 easy steps:</p>
+        <hr/>
+
+        <p>
+            <ol class="text-left" style="font-size:18px">
+            <li> Create and schedule your crowd/bomb, with your #hashtag and tweets.</li>
+            <li> Share it with your community and get as much people joined as possible! They'll join by choosing what they want to tweet, with the crowd #hashtag</li>
+            <li> Sit tight and wait...and your twitter bomb will be released at the time you scheduled it!</li>
+            </ol>
+        </p>
+        <p class="text-right" style="font-size:13px">
+        Be kind, this is a very alpha release, we'll be tweaking our code quite a lot in the next days..and months!
+        </p>
+        	<!-- <h6 class="pull-right">Yes, another small webite built with boostrap.</h6> -->
+       <div style="clear:both"></div>
+       {% if not user.is_authenticated %}
+        <p class="lead">
+        	This site idea is quite simple. First, <a href="{% url twitter_login %}">join</a> with twitter, then <a href="{% url new_crowd %}">create a campaign</a>, schedulle it and share it with your community. 
+       	</p>
+        <a class="btn btn-large btn-success" href="{% url force_login %}">Join today!</a>
+        {% endif %}
+
+            <p>
+
+<hr/>
+            <h3 style="text-align:center">See our active and most Popular Crowds, or
+            <a href="{% url new_crowd %}" class="btn btn-warning "><i class="icon-check icon-white"></i> Create your own Crowd</a>  </h3> 
+
+<hr/>
+        	<div class="row">
+        	{% for c in popular %}
+        		<div class="col-md-4">
+        				<h4>{{c.title}}</h4>
+    					<p>#{{c.hashtag}}, {{c.total_count}} crowder{% if c.total_count > 1 %}s{%endif%}</p>
+                        <p  class="text-warning" style="font-size:14px">{% diff_date c.start_time %}</p>
+
+    					<p>
+    						<a href="{% url join_campaign c.pk c.hashtag %}" class="btn btn-success">Join now!</a>
+    					</p>
+    					<p><blockquote style="text-align:left">{{c.description}}</blockquote></p>
+    					
+        		</div>
+        		{% if forloop.counter|divisibleby:3 %}</div><hr/><div class="row">{%endif%}
+            {% empty %}
+                No active crows now...help us by creating a new one!
+        	{% endfor %}
+        	</div>
+
+            <!-- <hr /> -->
+            <p>
+
+            <a href="{% url new_crowd %}" class="btn btn-warning pull-left"><i class="icon-check icon-white"></i> Create your own Crowd</a> 
+
+            <a href="{%  url crowds %}" class="btn btn-info pull-right">See all our active Crowds in the making</a>
+            </p>
+
+      {% endblock %}

@@ -1,0 +1,114 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>TwitMob</title>
+        <meta name="description" content="">
+        <style type="text/css">
+            body {
+                /*padding-top: 60px;*/
+            }
+            .container
+            {
+                max-width: 850px;
+            }
+            .white_text
+            {
+                color:#ffffff;
+            }
+            .black_text
+            {
+                color:#000000;
+            }
+        </style>
+    <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- <link href="{{STATIC_URL}}css/bootstrap-theme.css" rel="stylesheet"> -->
+    <link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
+
+        <!--[if lt IE 9]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="{{STATIC_URL}}js/jquery-2.0.2.min.js"></script>
+        <script src="{{STATIC_URL}}js/bootstrap.js"></script>
+
+        <script>
+            $(document).ready(function(){
+                var siteURL = "http://" + top.location.host.toString();
+
+                var $internalLinks = $("a:not(.external)");
+                var currentHref;
+
+                $internalLinks.click(function(){
+                    if($(this).attr("no_ax") != "1")
+                    {
+                        currentHref = $(this);
+
+                        if(currentHref.attr("href") != "#") 
+                        {
+                            $.get($(this).attr("href"),{"ax":"1"},function(data){
+                                //$("#all_content").html(data);
+                                //document.location.href = "#"+currentHref.attr("href");
+                            });
+                                //return false;
+                    
+                        }
+                    }
+                });
+
+            });
+        </script>
+        {% block extra_head %}{% endblock %}
+    </head>
+
+    <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li {% if pill == "home"%}class="active"{%endif%}><a href="/">Home</a></li>
+          <li {% if pill == "whatisthis"%}class="active"{%endif%} id="whatisthispill"><a href="/what-is-mycrowder">What is this?</a></li>
+          <li {% if pill == "active_crowds"%}class="active"{%endif%}><a href="{% url crowds %}">Active Crowds</a></li>
+          <li {% if pill == "new_crowd"%}class="active"{%endif%}><a href="{% url new_crowd %}">New Crowd!</a></li>
+          {% if user.is_authenticated %}
+
+          <li class="dropdown">
+          <a id="drop6" role="button" data-toggle="dropdown" href="#">{{user}} <b class="caret"></b></a>
+          <ul id="menu3" class="dropdown-menu" role="menu" aria-labelledby="drop6">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url new_crowd %}">New Crowd</a></li>
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url my_crowds %}">My Crowds</a></li>
+            
+            <li role="presentation" class="divider"></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url logout %}">Logout</a></li>
+          </ul>
+        </li> {% else %}
+          <li><a href="{% url force_login %}">Login</a></li>
+
+          {% endif %}
+        </ul>
+        <h3 class="text-muted"><a href="/">MiCrowder</a></h3>
+      </div>
+    <div class="container" id="all_content">
+
+
+
+    {% block content %}Empty page{% endblock %}
+    </div>
+    <div style="clear:both"></div>
+    <p><hr></p>
+
+    <footer class="row">
+        <div class="span6">
+            <p><a href="/">MiCrowder.com</a></p>
+        </div>
+        <div class="span6" style="text-align:right">
+            <p>
+                &copy; 2013 Tribalo.net <!-- / Javyer DerDeryan 2013
+                 -->
+            </p>
+        </div>
+    </footer>
+
+</div> <!-- container -->
+
+</body>
+</html>

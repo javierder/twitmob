@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block extra_head %}
+    <link href="{{STATIC_URL}}css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <script src="{{STATIC_URL}}js/bootstrap-datetimepicker.js"></script>
+
+    <script>
+    	$(function  () {
+    $('#id_start_time').datetimepicker({
+        format: "yyyy-mm-dd  hh:ii",
+        todayBtn: true,
+        minuteStep: 15
+
+
+    });
+    
+
+ 
+    	})
+    </script>
+{% endblock %}
+{% block content %}
+          <div class="page-header">
+          <h2>New Crowd</h2>
+          </div>
+		<form method="post" class="form-horizontal" id="create_form">
+		    {% crispy form %}
+		</form>
+
+{% endblock %}
